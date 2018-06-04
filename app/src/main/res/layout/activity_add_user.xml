@@ -14,6 +14,8 @@
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
+        android:background="@color/colorAccent"
+        android:textColor="@color/colorPrimaryDark"
         android:layout_marginStart="8dp"
         android:text="@string/submit"
         app:layout_constraintBottom_toBottomOf="parent"

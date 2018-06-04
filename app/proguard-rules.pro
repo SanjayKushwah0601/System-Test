@@ -31,3 +31,15 @@
 -keep public class com.evernote.android.job.JobRescheduleService
 -keep public class com.evernote.android.job.gcm.PlatformGcmService
 -keep public class com.evernote.android.job.work.PlatformWorker
+
+
+
+# Add this global rule
+-keepattributes Signature
+
+# This rule will properly ProGuard all the model classes in
+# the package com.yourcompany.models. Modify to fit the structure
+# of your app.
+-keepclassmembers class com.example.sanjay.sanjaysystemtest.Database.Model.** {
+  *;
+}
