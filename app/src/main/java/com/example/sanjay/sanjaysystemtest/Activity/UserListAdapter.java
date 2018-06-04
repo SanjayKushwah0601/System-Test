@@ -1,16 +1,14 @@
-package com.example.sanjay.sanjaysystemtest;
+package com.example.sanjay.sanjaysystemtest.Activity;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.sanjay.sanjaysystemtest.Database.Model.User;
+import com.example.sanjay.sanjaysystemtest.R;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

@@ -1,4 +1,4 @@
-package com.example.sanjay.sanjaysystemtest;
+package com.example.sanjay.sanjaysystemtest.Activity;
 
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -8,8 +8,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.sanjay.sanjaysystemtest.Database.Model.User;
+import com.example.sanjay.sanjaysystemtest.R;
 import com.example.sanjay.sanjaysystemtest.Utils.AlertUtil;
 import com.example.sanjay.sanjaysystemtest.Utils.Util;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -76,6 +78,8 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
 
             if (Util.isNetworkAvailable(this)) {
                 addNewUser(firstName, lastName, email, mobileNumber);
+            } else {
+                Toast.makeText(this, "No Internet Connection", Toast.LENGTH_LONG).show();
             }
         }
     }

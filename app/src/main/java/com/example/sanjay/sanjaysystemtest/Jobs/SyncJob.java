@@ -1,6 +1,5 @@
 package com.example.sanjay.sanjaysystemtest.Jobs;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -10,10 +9,7 @@ import com.evernote.android.job.JobRequest;
 import com.example.sanjay.sanjaysystemtest.App;
 import com.example.sanjay.sanjaysystemtest.Database.Model.User;
 import com.example.sanjay.sanjaysystemtest.Database.MyDatabase;
-import com.example.sanjay.sanjaysystemtest.MainActivity;
 import com.example.sanjay.sanjaysystemtest.Utils.AppPreference;
-import com.firebase.jobdispatcher.FirebaseJobDispatcher;
-import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
