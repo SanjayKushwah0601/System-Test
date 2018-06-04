@@ -107,7 +107,7 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 progressBar.setVisibility(View.GONE);
-                AlertUtil.showAlert(AddUserActivity.this, "User added successfuly. User list will updated on next sync.", true);
+                AlertUtil.showAlert(AddUserActivity.this, "User added successfuly. User list will be updated on next sync.", true);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
