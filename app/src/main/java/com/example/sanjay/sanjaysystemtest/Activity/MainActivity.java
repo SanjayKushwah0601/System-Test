@@ -34,6 +34,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -140,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
                 myRef.removeEventListener(listener);
 
 
+                Collections.reverse(users);
                 // FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(view.getContext()));
                 // scheduleJob(dispatcher);
                 new MySetDataTask(users).execute();
