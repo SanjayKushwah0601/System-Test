@@ -6,6 +6,8 @@ import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 import com.google.firebase.database.Exclude;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,13 +15,28 @@ import java.util.Map;
 @Entity(tableName = "user")
 public class User {
 
+    @SerializedName("id")
+    @Expose
     @NonNull
     @PrimaryKey
     private String id;
+
+    @SerializedName("firstname")
+    @Expose
     private String firstName;
+
+    @SerializedName("lastname")
+    @Expose
     private String lastName;
+
+    @SerializedName("phonenumber")
+    @Expose
     private String mobileNumber;
+
+    @SerializedName("emailid")
+    @Expose
     private String emailId;
+
 
     public User() {
     }

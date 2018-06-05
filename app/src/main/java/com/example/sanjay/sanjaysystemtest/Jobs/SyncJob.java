@@ -3,13 +3,17 @@ package com.example.sanjay.sanjaysystemtest.Jobs;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.evernote.android.job.Job;
 import com.evernote.android.job.JobRequest;
+import com.example.sanjay.sanjaysystemtest.Activity.MainActivity;
 import com.example.sanjay.sanjaysystemtest.App;
+import com.example.sanjay.sanjaysystemtest.Database.Model.GetUsers.ResponseUser;
 import com.example.sanjay.sanjaysystemtest.Database.Model.User;
 import com.example.sanjay.sanjaysystemtest.Database.MyDatabase;
 import com.example.sanjay.sanjaysystemtest.Utils.AppPreference;
+import com.example.sanjay.sanjaysystemtest.Utils.Constants;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,6 +24,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class SyncJob extends Job {
 
     public static final String TAG = "job_demo_tag";
@@ -29,48 +37,8 @@ public class SyncJob extends Job {
     @Override
     @NonNull
     protected Result onRunJob(@NonNull Params params) {
-        // run your job here
         Log.e("MyJob", "Started !!");
-
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference myRef = database.getReference("user");
-
-        listener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-
-                users = new ArrayList<>();
-
-                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
-                    User user = userSnapshot.getValue(User.class);
-                    user.setId(userSnapshot.getKey());
-                    users.add(user);
-                    Log.d(TAG, "Value is: " + user);
-                }
-
-                Collections.reverse(users);
-                // Remove the listener when all the user has been fetched from firebase
-                myRef.removeEventListener(listener);
-
-
-//                FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(new GooglePlayDriver(view.getContext()));
-//                scheduleJob(dispatcher);
-
-                new MyTask(users).execute();
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", error.toException());
-            }
-        };
-
-        myRef.addValueEventListener(listener);
-
-
+        getUsers();
         Log.e("MyJob", "Started !!!");
         return Result.SUCCESS;
     }
@@ -80,6 +48,30 @@ public class SyncJob extends Job {
                 .setExecutionWindow(30_000L, 40_000L)
                 .build()
                 .schedule();
+    }
+
+    private void getUsers() {
+        /*Create handle for the RetrofitInstance interface*/
+        Constants service = App.getRetrofitInstance().create(Constants.class);
+        Call<ResponseUser> call = service.getUsersList();
+        call.enqueue(new Callback<ResponseUser>() {
+            @Override
+            public void onResponse(Call<ResponseUser> call, Response<ResponseUser> response) {
+                Log.e("GetUserResponse", response.toString());
+                if (response.isSuccessful()) {
+                    if (response.body().getStatus() == 200) {
+                        List<User> users = response.body().getUserData();
+                        Collections.reverse(users);
+                        new MyTask(users).execute();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseUser> call, Throwable t) {
+
+            }
+        });
     }
 
 

@@ -15,12 +15,14 @@ import android.widget.Toast;
 
 import com.evernote.android.job.JobRequest;
 import com.example.sanjay.sanjaysystemtest.App;
+import com.example.sanjay.sanjaysystemtest.Database.Model.GetUsers.ResponseUser;
 import com.example.sanjay.sanjaysystemtest.Database.Model.User;
 import com.example.sanjay.sanjaysystemtest.Database.MyDatabase;
 import com.example.sanjay.sanjaysystemtest.Jobs.MyJobService;
 import com.example.sanjay.sanjaysystemtest.Jobs.SyncJob;
 import com.example.sanjay.sanjaysystemtest.R;
 import com.example.sanjay.sanjaysystemtest.Utils.AppPreference;
+import com.example.sanjay.sanjaysystemtest.Utils.Constants;
 import com.firebase.jobdispatcher.Constraint;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.Job;
@@ -39,6 +41,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getName();
@@ -55,9 +61,16 @@ public class MainActivity extends AppCompatActivity {
             schedulePeriodicJob();
 
             if (AppPreference.isFirstRun(this))
-                prepareDataForFirstRun();
+                getUsers();
         }
         initUI();
+
+        getUsers();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     private void initUI() {
@@ -114,6 +127,34 @@ public class MainActivity extends AppCompatActivity {
         dispatcher.mustSchedule(myJob);
     }
 
+
+    private void getUsers() {
+        /*Create handle for the RetrofitInstance interface*/
+        Constants service = App.getRetrofitInstance().create(Constants.class);
+        Call<ResponseUser> call = service.getUsersList();
+        call.enqueue(new Callback<ResponseUser>() {
+            @Override
+            public void onResponse(Call<ResponseUser> call, Response<ResponseUser> response) {
+                Log.e("GetUserResponse", response.toString());
+                if (response.isSuccessful()) {
+                    if (response.body().getStatus() == 200) {
+                        List<User> users = response.body().getUserData();
+                        Collections.reverse(users);
+                        new MySetDataTask(users).execute();
+                    } else {
+                        Toast.makeText(MainActivity.this, response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(MainActivity.this, "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseUser> call, Throwable t) {
+                Toast.makeText(MainActivity.this, "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
     /**
      * Show the data when the first time user opens the application
@@ -183,7 +224,6 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             new MyTask().execute();
-
         }
     }
 
