@@ -4,15 +4,19 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.sanjay.sanjaysystemtest.App;
+import com.example.sanjay.sanjaysystemtest.Database.Model.GetUsers.ResponseUser;
 import com.example.sanjay.sanjaysystemtest.Database.Model.User;
 import com.example.sanjay.sanjaysystemtest.R;
 import com.example.sanjay.sanjaysystemtest.Utils.AlertUtil;
+import com.example.sanjay.sanjaysystemtest.Utils.Constants;
 import com.example.sanjay.sanjaysystemtest.Utils.Util;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -20,8 +24,17 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import org.json.JSONObject;
+
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AddUserActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -95,23 +108,31 @@ public class AddUserActivity extends AppCompatActivity implements View.OnClickLi
      */
     private void addNewUser(String firstName, String lastName, String email, String mobile) {
         progressBar.setVisibility(View.VISIBLE);
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("user");
-        String key = myRef.push().getKey();
-        User post = new User(key, firstName, lastName, mobile, email);
-        Map<String, Object> postValues = post.toMap();
 
-        Map<String, Object> childUpdates = new HashMap<>();
-        childUpdates.put(key, postValues);
-        myRef.updateChildren(childUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
+        Constants service = App.getRetrofitInstance().create(Constants.class);
+        Call<ResponseBody> call = service.addUser(firstName, lastName, mobile, email);
+        call.enqueue(new Callback<ResponseBody>() {
             @Override
-            public void onComplete(@NonNull Task<Void> task) {
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.e("AddUserFailed", response.toString());
                 progressBar.setVisibility(View.GONE);
-                AlertUtil.showAlert(AddUserActivity.this, "User added successfuly. User list will be updated on next sync.", true);
+                if (response.isSuccessful()) {
+                    try {
+                        JSONObject object = new JSONObject(response.body().string());
+                        Log.e("Success", object.toString());
+                        if (object.getInt("status") == 200) {
+                            AlertUtil.showAlert(AddUserActivity.this, "User added successfuly. User list will be updated on next sync.", true);
+                        }
+                    } catch (Exception e) {
+
+                    }
+                }
+
             }
-        }).addOnFailureListener(new OnFailureListener() {
+
             @Override
-            public void onFailure(@NonNull Exception e) {
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.e("AddUserFailed", t.getMessage());
                 progressBar.setVisibility(View.GONE);
                 AlertUtil.showAlert(AddUserActivity.this, "Opps, Something went wrong", false);
             }
